@@ -117,7 +117,6 @@ def check_gpu(gpu, region):
 
 if __name__ == '__main__':
     pool = Pool()
-    # input_regions = ['TR']
     input_regions = ['TR', 'DE', 'UK']
     pool.map(check_amazon, input_regions)
 
