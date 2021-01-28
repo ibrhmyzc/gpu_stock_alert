@@ -1,0 +1,123 @@
+import requests
+from bs4 import BeautifulSoup
+import time
+import winsound
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.keys import Keys
+import datetime
+from selenium.webdriver.chrome.options import Options
+from multiprocessing import Pool
+
+options = Options()
+options.headless = True
+options.add_argument('--disable-gpu')
+options.add_argument("--log-level=3")
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36",
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "accept-encoding": "gzip, deflate, br",
+    "cache-control": "nocache",
+    "pragma": "no-cache",
+    "referer": 'www.amazon.de',
+}
+
+duration = 1000
+freq = 800
+
+url_tr = 'https://www.amazon.com.tr/hz/wishlist/ls/3BVI6714JE7Z9?ref_=wl_share'
+key_tr = 'Sepete Ekle'
+url_de = 'https://www.amazon.de/hz/wishlist/ls/7BJVUHN6LXTY?ref_=wl_share'
+key_de = 'In den Einkaufswagen'
+url_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP?ref_=wl_share'
+key_uk = 'Add to Basket'
+url_fr = ''
+key_fr= 'Ajouter au panier'
+url_it = ''
+key_it= 'Aggiungi al carrello'
+url_es = ''
+key_es= 'Añadir a la cesta'
+
+regions = {
+    'TR' : {
+        'url' : url_tr,
+        'key' : key_tr
+    },
+    'UK' : {
+        'url' : url_uk,
+        'key' : key_uk
+    },
+    'DE' : {
+        'url' : url_de,
+        'key' : key_de
+    }, 
+    'FR' : {
+        'url': url_fr,
+        'key': key_fr
+    }, 
+    'IT' : {
+        'url': url_it,
+        'key': key_it
+    }, 
+    'ES' : {
+        'url': url_es,
+        'key': key_es
+    }
+}
+
+def check_amazon(region):
+    browser = webdriver.Chrome(ChromeDriverManager().install(),  chrome_options=options)
+    while True:     
+        try:
+            check_for_wishlist(browser, region)
+        except:
+            pass
+
+
+def check_for_wishlist(browser, region):
+    url = regions[region]['url']
+    key = regions[region]['key']
+    browser.get(url)
+    pagedown(browser.find_element_by_tag_name("body"))
+    for gpu in get_gpus(browser):
+        if str(gpu.text).find(key) != -1:
+            check_gpu(gpu, region)
+
+
+def pagedown(elem):
+    no_of_pagedowns = 3
+    while no_of_pagedowns:
+        elem.send_keys(Keys.PAGE_DOWN)
+        time.sleep(1)
+        no_of_pagedowns-=1
+
+
+def get_gpus(browser):
+    return browser.find_elements_by_id("g-items")[0].find_elements_by_tag_name("li")
+
+
+def check_gpu(gpu, region):
+    try:
+        brand = gpu.find_element_by_tag_name("h3").find_element_by_tag_name("a").get_attribute("title")
+        product_link = gpu.find_element_by_tag_name("h3").find_element_by_tag_name("a").get_attribute("href")
+        product_response = requests.get(product_link, headers=headers)
+        product_page = BeautifulSoup(product_response.content, "html.parser")
+        seller = product_page.find("a", id='sellerProfileTriggerId').text if product_page.find("a", id='sellerProfileTriggerId') != None else (
+            product_page.find("span", class_="tabular-buybox-text").text if product_page.find("span", class_="tabular-buybox-text") != None else "")
+        try:
+            price = gpu.find_element_by_class_name("a-price").text
+        except:
+            price="price error"
+        stock_date = datetime.datetime.now()
+        print('STOCK FOUND IN AMAZON {} - {} - {} -  from {} - at {}:{}'.format(region, price, brand, seller, stock_date.hour, stock_date.minute))
+        winsound.Beep(freq, duration)
+    except:
+        pass
+
+
+if __name__ == '__main__':
+    pool = Pool()
+    # input_regions = ['TR']
+    input_regions = ['TR', 'DE', 'UK']
+    pool.map(check_amazon, input_regions)
+
