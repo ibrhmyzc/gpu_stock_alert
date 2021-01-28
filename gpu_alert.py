@@ -25,17 +25,17 @@ headers = {
 duration = 1000
 freq = 800
 
-url_tr = 'https://www.amazon.com.tr/hz/wishlist/ls/3BVI6714JE7Z9?ref_=wl_share'
+url_tr = 'add your own PUBLIC wishlist amazon.com.tr'
 key_tr = 'Sepete Ekle'
-url_de = 'https://www.amazon.de/hz/wishlist/ls/7BJVUHN6LXTY?ref_=wl_share'
+url_de = 'add your own PUBLIC wishlist amazon.de'
 key_de = 'In den Einkaufswagen'
-url_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP?ref_=wl_share'
+url_uk = 'add your own PUBLIC wishlist amazon.co.uk'
 key_uk = 'Add to Basket'
-url_fr = ''
+url_fr = 'add your own PUBLIC wishlist'
 key_fr= 'Ajouter au panier'
-url_it = ''
+url_it = 'add your own PUBLIC wishlist'
 key_it= 'Aggiungi al carrello'
-url_es = ''
+url_es = 'add your own PUBLIC wishlist'
 key_es= 'Añadir a la cesta'
 
 regions = {
