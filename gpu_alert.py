@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 import datetime
 from selenium.webdriver.chrome.options import Options
 from multiprocessing import Pool
+import re
 
 options = Options()
 options.headless = True
@@ -32,42 +33,84 @@ key_de = 'In den Einkaufswagen'
 url_uk = 'add your own PUBLIC wishlist amazon.co.uk'
 key_uk = 'Add to Basket'
 url_fr = 'add your own PUBLIC wishlist'
-key_fr= 'Ajouter au panier'
+key_fr = 'Ajouter au panier'
 url_it = 'add your own PUBLIC wishlist'
-key_it= 'Aggiungi al carrello'
+key_it = 'Aggiungi al carrello'
 url_es = 'add your own PUBLIC wishlist'
-key_es= 'Añadir a la cesta'
+key_es = 'Añadir a la cesta'
 
 regions = {
-    'TR' : {
-        'url' : url_tr,
-        'key' : key_tr
+    'TR': {
+        'url': url_tr,
+        'key': key_tr
     },
-    'UK' : {
-        'url' : url_uk,
-        'key' : key_uk
+    'UK': {
+        'url': url_uk,
+        'key': key_uk
     },
-    'DE' : {
-        'url' : url_de,
-        'key' : key_de
-    }, 
-    'FR' : {
+    'DE': {
+        'url': url_de,
+        'key': key_de
+    },
+    'FR': {
         'url': url_fr,
         'key': key_fr
-    }, 
-    'IT' : {
+    },
+    'IT': {
         'url': url_it,
         'key': key_it
-    }, 
-    'ES' : {
+    },
+    'ES': {
         'url': url_es,
         'key': key_es
     }
 }
 
+price_map = {
+    'TR': {
+        '3060': 6500,
+        '3070': 9000,
+        '3080': 12000,
+        '3090': 20000
+    },
+    'UK': {
+        '3060': 600,
+        '3070': 900,
+        '3080': 1100,
+        '3090': 2000
+    },
+    'DE': {
+        '3060': 600,
+        '3070': 900,
+        '3080': 1100,
+        '3090': 2000
+    },
+    'ES': {
+        '3060': 600,
+        '3070': 900,
+        '3080': 1100,
+        '3090': 2000
+    },
+    'IT': {
+        '3060': 600,
+        '3070': 900,
+        '3080': 1100,
+        '3090': 2000
+    },
+    'FR': {
+        '3060': 600,
+        '3070': 900,
+        '3080': 1100,
+        '3090': 2000
+    }
+}
+
+
 def check_amazon(region):
-    browser = webdriver.Chrome(ChromeDriverManager().install(),  chrome_options=options)
-    while True:     
+    browser = webdriver.Chrome(
+        ChromeDriverManager().install(),  chrome_options=options)
+    print("initialized for {}".format(region))
+    while True:
         try:
             check_for_wishlist(browser, region)
         except:
@@ -89,7 +132,7 @@ def pagedown(elem):
     while no_of_pagedowns:
         elem.send_keys(Keys.PAGE_DOWN)
         time.sleep(1)
-        no_of_pagedowns-=1
+        no_of_pagedowns -= 1
 
 
 def get_gpus(browser):
@@ -98,8 +141,10 @@ def get_gpus(browser):
 
 def check_gpu(gpu, region):
     try:
-        brand = gpu.find_element_by_tag_name("h3").find_element_by_tag_name("a").get_attribute("title")
-        product_link = gpu.find_element_by_tag_name("h3").find_element_by_tag_name("a").get_attribute("href")
+        brand = gpu.find_element_by_tag_name(
+            "h3").find_element_by_tag_name("a").get_attribute("title")
+        product_link = gpu.find_element_by_tag_name(
+            "h3").find_element_by_tag_name("a").get_attribute("href")
         product_response = requests.get(product_link, headers=headers)
         product_page = BeautifulSoup(product_response.content, "html.parser")
         seller = product_page.find("a", id='sellerProfileTriggerId').text if product_page.find("a", id='sellerProfileTriggerId') != None else (
@@ -107,16 +152,38 @@ def check_gpu(gpu, region):
         try:
             price = gpu.find_element_by_class_name("a-price").text
         except:
-            price="price error"
+            price = "price error"
         stock_date = datetime.datetime.now()
-        print('STOCK FOUND IN AMAZON {} - {} - {} -  from {} - at {}:{}'.format(region, price, brand, seller, stock_date.hour, stock_date.minute))
-        winsound.Beep(freq, duration)
+        print('STOCK FOUND IN AMAZON {} - {} - {} -  from {} - at {}:{}'.format(region,
+                                                                                price, brand, seller, stock_date.hour, stock_date.minute))
+        if cast_price_to_double(price) <= get_max_price(region, brand.lower()):
+            winsound.Beep(freq, duration)
     except:
         pass
 
 
+def cast_price_to_double(price):
+    return float(re.sub('[^0-9]', '', price)) // 100
+
+
+def get_gpu_brand(brand):
+    if brand.find('3060') != -1:
+        return '3060'
+    elif brand.find('3070') != -1:
+        return '3070'
+    elif brand.find('3080') != -1:
+        return '3080'
+    elif brand.find('3090') != -1:
+        return '3090'
+    return ''
+
+
+def get_max_price(region, brand):
+    return price_map[region][get_gpu_brand(brand)]
+
+
 if __name__ == '__main__':
     pool = Pool()
+    # input_regions = ['TR']
     input_regions = ['TR', 'DE', 'UK']
     pool.map(check_amazon, input_regions)
-
