@@ -112,9 +112,10 @@ def check_amazon(region):
     print("initialized for {}".format(region))
     while True:
         try:
+            time.sleep(1)
             check_for_wishlist(browser, region)
-        except:
-            pass
+        except Exception as e:
+            print("ERROR: {}".format(e))
 
 
 def check_for_wishlist(browser, region):
@@ -158,8 +159,8 @@ def check_gpu(gpu, region):
                                                                                 price, brand, seller, stock_date.hour, stock_date.minute))
         if cast_price_to_double(price) <= get_max_price(region, brand.lower()):
             winsound.Beep(freq, duration)
-    except:
-        pass
+    except Exception as e:
+        print("ERROR: {}".format(e))
 
 
 def cast_price_to_double(price):
@@ -184,6 +185,6 @@ def get_max_price(region, brand):
 
 if __name__ == '__main__':
     pool = Pool()
-    # input_regions = ['TR']
-    input_regions = ['TR', 'DE', 'UK']
+    input_regions = ['TR']
+    # input_regions = ['TR', 'DE', 'UK']
     pool.map(check_amazon, input_regions)
