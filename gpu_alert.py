@@ -38,6 +38,9 @@ url_it = 'add your own PUBLIC wishlist'
 key_it = 'Aggiungi al carrello'
 url_es = 'add your own PUBLIC wishlist'
 key_es = 'Añadir a la cesta'
+url_us = "add your own PUBLIC wishlist amazon.com"
+key_us = "Add to Cart"
+
 
 regions = {
     'TR': {
@@ -63,6 +66,10 @@ regions = {
     'ES': {
         'url': url_es,
         'key': key_es
+    },
+    'US': {
+        'url': url_us,
+        'key': key_us
     }
 }
 
@@ -99,6 +106,12 @@ price_map = {
         '3090': 2000
     },
     'FR': {
+        '3060': 600,
+        '3070': 900,
+        '3080': 1100,
+        '3090': 2000
+    },
+    'US': {
         '3060': 600,
         '3070': 900,
         '3080': 1100,
