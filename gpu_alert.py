@@ -26,11 +26,11 @@ headers = {
 duration = 1000
 freq = 800
 
-url_tr = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/3BVI6714JE7Z9?type=wishlist&_encoding=UTF8'
+url_tr = 'add your own PUBLIC wishlist amazon.com.tr'
 key_tr = 'Sepete Ekle'
-url_de = 'https://www.amazon.de/hz/wishlist/genericItemsPage/7BJVUHN6LXTY?type=wishlist&_encoding=UTF8'
+url_de = 'add your own PUBLIC wishlist amazon.de'
 key_de = 'In den Einkaufswagen'
-url_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist'
+url_uk = 'add your own PUBLIC wishlist amazon.co.uk'
 key_uk = 'Add to Basket'
 url_fr = 'add your own PUBLIC wishlist'
 key_fr = 'Ajouter au panier'
@@ -181,10 +181,8 @@ def get_gpu_brand(brand):
 
 
 def get_max_price(region, brand):
-    if get_gpu_brand(brand) == '':
-        return default_price
-    else:
-        return price_map[region][get_gpu_brand(brand)]
+    key_brand = get_gpu_brand(brand)
+    return price_map[region][key_brand] if key_brand in price_map[region] else default_price
 
 
 if __name__ == '__main__':
