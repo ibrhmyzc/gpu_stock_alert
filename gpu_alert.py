@@ -26,11 +26,11 @@ headers = {
 duration = 1000
 freq = 800
 
-url_tr = 'add your own PUBLIC wishlist amazon.com.tr'
+url_tr = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/3BVI6714JE7Z9?type=wishlist&_encoding=UTF8'
 key_tr = 'Sepete Ekle'
-url_de = 'add your own PUBLIC wishlist amazon.de'
+url_de = 'https://www.amazon.de/hz/wishlist/genericItemsPage/7BJVUHN6LXTY?type=wishlist&_encoding=UTF8'
 key_de = 'In den Einkaufswagen'
-url_uk = 'add your own PUBLIC wishlist amazon.co.uk'
+url_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist'
 key_uk = 'Add to Basket'
 url_fr = 'add your own PUBLIC wishlist'
 key_fr = 'Ajouter au panier'
@@ -66,6 +66,7 @@ regions = {
     }
 }
 
+default_price = 9999
 price_map = {
     'TR': {
         '3060': 6500,
@@ -115,7 +116,7 @@ def check_amazon(region):
             time.sleep(1)
             check_for_wishlist(browser, region)
         except Exception as e:
-            print("ERROR: {}".format(e))
+            print("ERROR M: {}".format(e))
 
 
 def check_for_wishlist(browser, region):
@@ -160,7 +161,7 @@ def check_gpu(gpu, region):
         if cast_price_to_double(price) <= get_max_price(region, brand.lower()):
             winsound.Beep(freq, duration)
     except Exception as e:
-        print("ERROR: {}".format(e))
+        print("ERROR P: {}".format(e))
 
 
 def cast_price_to_double(price):
@@ -180,7 +181,10 @@ def get_gpu_brand(brand):
 
 
 def get_max_price(region, brand):
-    return price_map[region][get_gpu_brand(brand)]
+    if get_gpu_brand(brand) == '':
+        return default_price
+    else:
+        return price_map[region][get_gpu_brand(brand)]
 
 
 if __name__ == '__main__':
