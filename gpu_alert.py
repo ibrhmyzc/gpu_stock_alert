@@ -14,64 +14,34 @@ options = Options()
 options.headless = True
 options.add_argument('--disable-gpu')
 options.add_argument("--log-level=3")
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36",
-    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "accept-encoding": "gzip, deflate, br",
-    "cache-control": "nocache",
-    "pragma": "no-cache",
-    "referer": 'www.amazon.de',
-}
 
 duration = 1000
 freq = 800
+list_add_to_cart = "data-add-to-cart"
+grid_add_to_cart = "grid-add-to-cart"
+class_add_to_cart = "a-button-stack"
 
-url_tr = 'add your own PUBLIC wishlist amazon.com.tr'
-key_tr = 'Sepete Ekle'
-url_de = 'add your own PUBLIC wishlist amazon.de'
-key_de = 'In den Einkaufswagen'
-url_uk = 'add your own PUBLIC wishlist amazon.co.uk'
-key_uk = 'Add to Basket'
-url_fr = 'add your own PUBLIC wishlist'
-key_fr = 'Ajouter au panier'
-url_it = 'add your own PUBLIC wishlist'
-key_it = 'Aggiungi al carrello'
-url_es = 'add your own PUBLIC wishlist'
-key_es = 'Añadir a la cesta'
-url_us = "add your own PUBLIC wishlist amazon.com"
-key_us = "Add to Cart"
+
+wishlist_tr = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/3BVI6714JE7Z9?type=wishlist&_encoding=UTF8'
+wishlist_tr_2 = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/2CYS35SOLVH4E?'
+wishlist_de = 'https://www.amazon.de/hz/wishlist/genericItemsPage/7BJVUHN6LXTY?type=wishlist&_encoding=UTF8'
+wishlist_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist'
+wishlist_fr = 'add your own PUBLIC wishlist'
+wishlist_it = 'add your own PUBLIC wishlist'
+wishlist_es = 'add your own PUBLIC wishlist'
+wishlist_us = "add your own PUBLIC wishlist amazon.com"
 
 
 regions = {
-    'TR': {
-        'url': url_tr,
-        'key': key_tr
-    },
-    'UK': {
-        'url': url_uk,
-        'key': key_uk
-    },
-    'DE': {
-        'url': url_de,
-        'key': key_de
-    },
-    'FR': {
-        'url': url_fr,
-        'key': key_fr
-    },
-    'IT': {
-        'url': url_it,
-        'key': key_it
-    },
-    'ES': {
-        'url': url_es,
-        'key': key_es
-    },
-    'US': {
-        'url': url_us,
-        'key': key_us
-    }
+    'TR': [wishlist_tr, wishlist_tr_2],
+    'UK': [wishlist_uk],
+    'DE': [wishlist_de],
+    'FR': [wishlist_fr],
+    'IT': [wishlist_it],
+    'ES': [wishlist_es],
+    'US': [wishlist_us]
 }
+
 
 default_price = 9999
 price_map = {
@@ -120,6 +90,16 @@ price_map = {
 }
 
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36",
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "accept-encoding": "gzip, deflate, br",
+    "cache-control": "nocache",
+    "pragma": "no-cache",
+    "referer": 'www.amazon.de',
+}
+
+
 def check_amazon(region):
     browser = webdriver.Chrome(
         ChromeDriverManager().install(),  chrome_options=options)
@@ -133,13 +113,18 @@ def check_amazon(region):
 
 
 def check_for_wishlist(browser, region):
-    url = regions[region]['url']
-    key = regions[region]['key']
-    browser.get(url)
-    pagedown(browser.find_element_by_tag_name("body"))
-    for gpu in get_gpus(browser):
-        if str(gpu.text).find(key) != -1:
-            check_gpu(gpu, region)
+    urls = regions[region]
+    for url in urls:
+        browser.get(url)
+        pagedown(browser.find_element_by_tag_name("body"))
+        for gpu in get_gpus(browser):
+            if is_button_active(gpu):
+                check_gpu(gpu, region)
+
+
+def is_button_active(gpu):
+    button = gpu.find_element_by_class_name(class_add_to_cart).find_element_by_tag_name('span')
+    return button.get_attribute(grid_add_to_cart) != None or button.get_attribute(list_add_to_cart) != None
 
 
 def pagedown(elem):
@@ -151,7 +136,11 @@ def pagedown(elem):
 
 
 def get_gpus(browser):
-    return browser.find_elements_by_id("g-items")[0].find_elements_by_tag_name("li")
+    is_grid_view = browser.find_elements_by_id("g-items-grid") != []
+    if(is_grid_view):
+        return browser.find_elements_by_id("g-items-grid")[0].find_elements_by_tag_name("li")
+    else:
+        return browser.find_elements_by_id("g-items")[0].find_elements_by_tag_name("li")
 
 
 def check_gpu(gpu, region):
