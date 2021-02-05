@@ -24,12 +24,12 @@ class_add_to_cart = "a-button-stack"
 
 
 wishlist_tr = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/3BVI6714JE7Z9?type=wishlist&_encoding=UTF8'
-wishlist_de = 'add your own PUBLIC wishlist'
-wishlist_uk = 'add your own PUBLIC wishlist'
+wishlist_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist'
+wishlist_de = 'https://www.amazon.de/hz/wishlist/genericItemsPage/7BJVUHN6LXTY?type=wishlist&_encoding=UTF8'
 wishlist_fr = 'add your own PUBLIC wishlist'
 wishlist_it = 'add your own PUBLIC wishlist'
 wishlist_es = 'add your own PUBLIC wishlist'
-wishlist_us = "add your own PUBLIC wishlist"
+wishlist_us = "https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist"
 
 
 regions = {
@@ -192,6 +192,6 @@ def get_max_price(region, brand):
 
 if __name__ == '__main__':
     pool = Pool()
-    input_regions = ['TR']
-    # input_regions = ['TR', 'DE', 'UK', 'US']
+    # input_regions = ['TR']
+    input_regions = ['TR', 'DE', 'UK', 'US']
     pool.map(check_amazon, input_regions)
