@@ -7,6 +7,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 import datetime
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import ActionChains
 from multiprocessing import Pool
 import re
 
@@ -23,17 +24,16 @@ class_add_to_cart = "a-button-stack"
 
 
 wishlist_tr = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/3BVI6714JE7Z9?type=wishlist&_encoding=UTF8'
-wishlist_tr_2 = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/2CYS35SOLVH4E?'
-wishlist_de = 'https://www.amazon.de/hz/wishlist/genericItemsPage/7BJVUHN6LXTY?type=wishlist&_encoding=UTF8'
-wishlist_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist'
+wishlist_de = 'add your own PUBLIC wishlist'
+wishlist_uk = 'add your own PUBLIC wishlist'
 wishlist_fr = 'add your own PUBLIC wishlist'
 wishlist_it = 'add your own PUBLIC wishlist'
 wishlist_es = 'add your own PUBLIC wishlist'
-wishlist_us = "add your own PUBLIC wishlist amazon.com"
+wishlist_us = "add your own PUBLIC wishlist"
 
 
 regions = {
-    'TR': [wishlist_tr, wishlist_tr_2],
+    'TR': [wishlist_tr],
     'UK': [wishlist_uk],
     'DE': [wishlist_de],
     'FR': [wishlist_fr],
@@ -116,6 +116,10 @@ def check_for_wishlist(browser, region):
     for url in urls:
         browser.get(url)
         pagedown(browser.find_element_by_tag_name("body"))
+        is_grid_view = browser.find_elements_by_id("g-items-grid") != []
+        if is_grid_view:
+            list_view_button = browser.find_elements_by_id('list-view-switcher')
+            ActionChains(browser).click(list_view_button).perform()
         for gpu in get_gpus(browser):
             if is_button_active(gpu):
                 check_gpu(gpu, region)
@@ -130,7 +134,7 @@ def pagedown(elem):
     no_of_pagedowns = 2
     while no_of_pagedowns:
         elem.send_keys(Keys.PAGE_DOWN)
-        time.sleep(1)
+        time.sleep(2)
         no_of_pagedowns -= 1
 
 
@@ -189,5 +193,5 @@ def get_max_price(region, brand):
 if __name__ == '__main__':
     pool = Pool()
     input_regions = ['TR']
-    # input_regions = ['TR', 'DE', 'UK']
+    # input_regions = ['TR', 'DE', 'UK', 'US']
     pool.map(check_amazon, input_regions)
