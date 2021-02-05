@@ -12,7 +12,7 @@ from multiprocessing import Pool
 import re
 
 options = Options()
-options.headless = True
+# options.headless = True
 options.add_argument('--disable-gpu')
 options.add_argument("--log-level=3")
 
@@ -29,7 +29,7 @@ wishlist_de = 'https://www.amazon.de/hz/wishlist/genericItemsPage/7BJVUHN6LXTY?t
 wishlist_fr = 'add your own PUBLIC wishlist'
 wishlist_it = 'add your own PUBLIC wishlist'
 wishlist_es = 'add your own PUBLIC wishlist'
-wishlist_us = "https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist"
+wishlist_us = "https://www.amazon.com/hz/wishlist/ls/23YX14E1GPU2B/ref=nav_wishlist_lists_2?_encoding=UTF8&type=wishlist"
 
 
 regions = {
