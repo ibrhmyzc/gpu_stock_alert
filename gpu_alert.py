@@ -117,12 +117,9 @@ def check_for_wishlist(browser, region):
         browser.get(url)
         pagedown(browser.find_element_by_tag_name("body"))
         is_grid_view = browser.find_elements_by_id("g-items-grid") != []
-        if is_grid_view:
-            list_view_button = browser.find_elements_by_id('list-view-switcher')
-            ActionChains(browser).click(list_view_button).perform()
-        for gpu in get_gpus(browser):
+        for gpu in get_gpus(browser, is_grid_view):
             if is_button_active(gpu):
-                check_gpu(gpu, region)
+                check_gpu(gpu, region, is_grid_view, browser)
 
 
 def is_button_active(gpu):
@@ -138,24 +135,29 @@ def pagedown(elem):
         no_of_pagedowns -= 1
 
 
-def get_gpus(browser):
-    is_grid_view = browser.find_elements_by_id("g-items-grid") != []
+def get_gpus(browser, is_grid_view):
     if(is_grid_view):
         return browser.find_elements_by_id("g-items-grid")[0].find_elements_by_tag_name("li")
     else:
         return browser.find_elements_by_id("g-items")[0].find_elements_by_tag_name("li")
 
 
-def check_gpu(gpu, region):
+def check_gpu(gpu, region, is_grid_view, browser):
     try:
-        brand = gpu.find_element_by_tag_name(
-            "h3").find_element_by_tag_name("a").get_attribute("title")
-        product_link = gpu.find_element_by_tag_name(
-            "h3").find_element_by_tag_name("a").get_attribute("href")
-        product_response = requests.get(product_link, headers=headers)
-        product_page = BeautifulSoup(product_response.content, "html.parser")
-        seller = product_page.find("a", id='sellerProfileTriggerId').text if product_page.find("a", id='sellerProfileTriggerId') != None else (
-            product_page.find("span", class_="tabular-buybox-text").text if product_page.find("span", class_="tabular-buybox-text") != None else "")
+        if not is_grid_view:
+            brand = gpu.find_element_by_tag_name(
+                "h3").find_element_by_tag_name("a").get_attribute("title")
+            product_link = gpu.find_element_by_tag_name(
+                "h3").find_element_by_tag_name("a").get_attribute("href")
+            product_response = requests.get(product_link, headers=headers)
+            product_page = BeautifulSoup(product_response.content, "html.parser")
+            seller = product_page.find("a", id='sellerProfileTriggerId').text if product_page.find("a", id='sellerProfileTriggerId') != None else (
+                product_page.find("span", class_="tabular-buybox-text").text if product_page.find("span", class_="tabular-buybox-text") != None else "")
+        else:
+            product_link = gpu.find_element_by_class_name('a-button-stack').find_element_by_tag_name("a").get_attribute("href")
+            brand = ''
+            seller = ''
+            #  TO DO
         try:
             price = gpu.find_element_by_class_name("a-price").text
         except:
