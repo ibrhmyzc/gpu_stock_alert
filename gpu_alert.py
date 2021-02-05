@@ -18,7 +18,7 @@ options.add_argument("--log-level=3")
 duration = 1000
 freq = 800
 list_add_to_cart = "data-add-to-cart"
-grid_add_to_cart = "grid-add-to-cart"
+grid_add_to_cart = "data-grid-add-to-cart"
 class_add_to_cart = "a-button-stack"
 
 
@@ -106,7 +106,6 @@ def check_amazon(region):
     print("initialized for {}".format(region))
     while True:
         try:
-            time.sleep(1)
             check_for_wishlist(browser, region)
         except Exception as e:
             print("ERROR M: {}".format(e))
@@ -128,7 +127,7 @@ def is_button_active(gpu):
 
 
 def pagedown(elem):
-    no_of_pagedowns = 3
+    no_of_pagedowns = 2
     while no_of_pagedowns:
         elem.send_keys(Keys.PAGE_DOWN)
         time.sleep(1)
