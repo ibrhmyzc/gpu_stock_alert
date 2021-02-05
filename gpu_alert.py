@@ -12,7 +12,7 @@ from multiprocessing import Pool
 import re
 
 options = Options()
-# options.headless = True
+options.headless = True
 options.add_argument('--disable-gpu')
 options.add_argument("--log-level=3")
 
