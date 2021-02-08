@@ -24,13 +24,13 @@ grid_add_to_cart = "data-grid-add-to-cart"
 class_add_to_cart = "a-button-stack"
 
 
-wishlist_tr = 'https://www.amazon.com.tr/hz/wishlist/genericItemsPage/3BVI6714JE7Z9?type=wishlist&_encoding=UTF8'
-wishlist_uk = 'https://www.amazon.co.uk/hz/wishlist/ls/1O1ZOBALWLKQP/ref=nav_wishlist_lists_1?_encoding=UTF8&type=wishlist'
-wishlist_de = 'https://www.amazon.de/hz/wishlist/genericItemsPage/7BJVUHN6LXTY?type=wishlist&_encoding=UTF8'
+wishlist_tr = 'add your own PUBLIC wishlist'
+wishlist_uk = 'add your own PUBLIC wishlist'
+wishlist_de = 'add your own PUBLIC wishlist'
 wishlist_fr = 'add your own PUBLIC wishlist'
 wishlist_it = 'add your own PUBLIC wishlist'
 wishlist_es = 'add your own PUBLIC wishlist'
-wishlist_us = "https://www.amazon.com/hz/wishlist/ls/23YX14E1GPU2B/ref=nav_wishlist_lists_2?_encoding=UTF8&type=wishlist"
+wishlist_us = "add your own PUBLIC wishlist"
 
 
 regions = {
@@ -118,7 +118,10 @@ def check_amazon(region):
 def check_for_wishlist(browser, region):
     urls = regions[region]
     for url in urls:
-        browser.get(url)
+        try:
+            browser.get(url)
+        except:
+            return
         pagedown(browser.find_element_by_tag_name("body"))
         is_grid_view = browser.find_elements_by_id("g-items-grid") != []
         for gpu in get_gpus(browser, is_grid_view):
@@ -206,8 +209,8 @@ def open_amazon_page(url):
 
 if __name__ == '__main__':
     pool = Pool(processes=8)  
-    input_regions = ['TR']
-    # input_regions = ['TR', 'DE', 'UK', 'US']
+    # input_regions = ['TR']
+    input_regions = ['TR', 'DE', 'UK', 'US']
     pool.map(check_amazon, input_regions)
 
 
